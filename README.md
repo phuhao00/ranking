@@ -1,18 +1,16 @@
-# 分布式游戏排行榜系统
+# 游戏排行榜系统
 
-一个高性能、高并发的分布式游戏排行榜微服务系统，支持动态伸缩和多节点部署，确保数据一致性。
+基于 Go 语言和 netcore-go 框架开发的高性能游戏排行榜系统，支持排行榜管理、分数提交和实时查询功能。
 
-## 🚀 特性
+## ✨ 核心特性
 
-- **高性能**: 基于Go语言开发，支持高并发处理
-- **分布式**: 支持多节点部署和动态伸缩
-- **数据一致性**: 使用MongoDB + Redis确保数据一致性
-- **实时排名**: Redis缓存提供毫秒级排名查询
-- **多种排行榜**: 支持全局、日榜、周榜、月榜等多种类型
-- **RESTful API**: 提供完整的REST API接口
-- **监控告警**: 集成Prometheus + Grafana监控
-- **容器化**: 支持Docker容器化部署
-- **健康检查**: 完善的健康检查和故障转移机制
+- **netcore-go 框架**: 基于现代化的 Go Web 框架构建
+- **完整中间件**: 日志记录、错误恢复、CORS、限流、安全头等
+- **数据持久化**: MongoDB 存储 + Redis 缓存双重保障
+- **RESTful API**: 完整的排行榜和分数管理接口
+- **性能测试**: 支持高并发压力测试，QPS 可达 4000+
+- **健康监控**: 完善的健康检查和系统指标监控
+- **容器化部署**: Docker 支持，便于部署和扩展
 
 ## 🏗️ 系统架构
 
@@ -46,58 +44,62 @@
 
 ## 🛠️ 技术栈
 
-- **后端**: Go 1.21 + Gin + netcore-go
-- **数据库**: MongoDB 7.0 (持久化存储)
-- **缓存**: Redis 7.2 (实时排名缓存)
-- **日志**: spoor日志库
-- **监控**: Prometheus + Grafana
+- **Web框架**: netcore-go (现代化 Go Web 框架)
+- **数据库**: MongoDB (文档存储)
+- **缓存**: Redis (高性能缓存)
+- **日志**: 结构化日志系统
+- **中间件**: 日志、恢复、CORS、限流、安全头、请求ID
 - **容器化**: Docker + Docker Compose
-- **负载均衡**: Nginx (可选)
-- **服务发现**: Consul (可选)
+- **测试**: 功能测试 + 压力测试工具
 
-## 📦 快速开始
+## 🚀 快速开始
 
 ### 环境要求
 
 - Go 1.21+
-- Docker & Docker Compose
-- MongoDB 7.0+
-- Redis 7.2+
+- MongoDB (本地或远程)
+- Redis (本地或远程)
 
 ### 1. 克隆项目
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/phuhao00/ranking.git
 cd ranking
 ```
 
-### 2. 使用Docker Compose启动
+### 2. 安装依赖
 
 ```bash
-# 启动完整环境
-make dev-full
-
-# 或者手动启动
-docker-compose --profile tools --profile monitoring up -d
+go mod download
 ```
 
-### 3. 验证服务
+### 3. 配置数据库
+
+确保 MongoDB 和 Redis 服务正在运行：
+```bash
+# MongoDB (默认端口 27017)
+mongod
+
+# Redis (默认端口 6379)
+redis-server
+```
+
+### 4. 启动服务
+
+```bash
+# 启动排行榜服务
+go run cmd/server/main.go
+```
+
+### 5. 验证服务
 
 ```bash
 # 健康检查
 curl http://localhost:8080/health
 
-# 获取排行榜列表
-curl http://localhost:8080/api/v1/leaderboard/list
+# 查看系统指标
+curl http://localhost:8080/api/v1/metrics
 ```
-
-### 4. 访问管理界面
-
-- **应用服务**: http://localhost:8080
-- **MongoDB管理**: http://localhost:8081 (admin/admin)
-- **Redis管理**: http://localhost:8082 (admin/admin)
-- **Prometheus**: http://localhost:9091
-- **Grafana**: http://localhost:3000 (admin/admin)
 
 ## 🔧 本地开发
 
@@ -133,7 +135,29 @@ make check
 make test
 ```
 
-## 📚 API 文档
+## 📚 API 接口
+
+### 系统接口
+
+#### 健康检查
+
+```http
+GET /health
+```
+
+响应示例：
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-20T10:30:00Z"
+}
+```
+
+#### 系统指标
+
+```http
+GET /api/v1/metrics
+```
 
 ### 排行榜管理
 
@@ -144,27 +168,19 @@ POST /api/v1/leaderboard/create
 Content-Type: application/json
 
 {
-  "name": "全球积分排行榜",
-  "game_id": "my_game",
-  "type": "global",
-  "sort_order": "desc",
-  "max_entries": 10000,
-  "config": {
-    "timezone": "UTC"
-  }
+  "name": "测试排行榜",
+  "description": "这是一个测试排行榜",
+  "game_id": "test_game_001",
+  "type": "score",
+  "order": "desc",
+  "max_entries": 100
 }
 ```
 
-#### 获取排行榜
+#### 获取排行榜列表
 
 ```http
-GET /api/v1/leaderboard/{id}?limit=100&offset=0
-```
-
-#### 获取用户排名
-
-```http
-GET /api/v1/leaderboard/{id}/rank/{userId}
+GET /api/v1/leaderboard/list
 ```
 
 ### 分数管理
@@ -176,52 +192,18 @@ POST /api/v1/score/submit
 Content-Type: application/json
 
 {
-  "leaderboard_id": "global_score_demo",
-  "user_id": "user_123",
-  "score": 95000,
-  "source": "game",
-  "metadata": {
-    "level": 10,
-    "achievement": "high_score"
-  }
+  "user_id": "user_001",
+  "username": "玩家1",
+  "score": 1000,
+  "leaderboard_id": "test_leaderboard_id"
 }
 ```
 
-#### 批量提交分数
+### 管理接口
 
 ```http
-POST /api/v1/score/batch
-Content-Type: application/json
-
-{
-  "leaderboard_id": "global_score_demo",
-  "scores": [
-    {
-      "user_id": "user_123",
-      "score": 95000
-    },
-    {
-      "user_id": "user_456",
-      "score": 87500
-    }
-  ]
-}
-```
-
-### 监控接口
-
-#### 健康检查
-
-```http
-GET /health
-GET /ready
-```
-
-#### 系统指标
-
-```http
-GET /api/v1/metrics/
-GET /api/v1/metrics/leaderboard/{id}
+GET /admin/status
+GET /admin/health
 ```
 
 ## 🔧 配置说明
@@ -265,146 +247,129 @@ log:
   output: "stdout"
 ```
 
-## 🚀 部署指南
+## 🚀 部署
 
-### Docker部署
+### Docker 部署
 
 ```bash
 # 构建镜像
-make docker-build
+docker build -t ranking-system .
 
-# 启动服务
-make docker-run
+# 运行容器
+docker run -p 8080:8080 ranking-system
 ```
 
-### Kubernetes部署
+### 配置文件
 
-```bash
-# 应用Kubernetes配置
-kubectl apply -f k8s/
+主要配置文件 `configs/config.yaml`：
+
+```yaml
+server:
+  host: "0.0.0.0"
+  port: 8080
+
+mongodb:
+  uri: "mongodb://localhost:27017"
+  database: "ranking"
+
+redis:
+  addr: "localhost:6379"
+  db: 0
+
+log:
+  level: "info"
+  format: "json"
 ```
 
-### 生产环境配置
+## 📊 性能测试结果
 
-1. **数据库优化**
-   - MongoDB副本集配置
-   - Redis集群配置
-   - 数据备份策略
+基于实际压力测试的性能数据：
 
-2. **性能调优**
-   - 连接池大小调整
-   - 缓存策略优化
-   - 索引优化
+### 并发性能
 
-3. **监控告警**
-   - Prometheus指标收集
-   - Grafana仪表板配置
-   - 告警规则设置
+| 并发数 | 接口类型 | QPS | 成功率 | 平均响应时间 |
+|--------|----------|-----|--------|-------------|
+| 10 | 健康检查 | 894.36 | 100% | 889µs |
+| 50 | 健康检查 | 4466.54 | 100% | 924µs |
+| 100 | 健康检查 | 3797.90 | 100% | 15.81ms |
+| 50 | 指标接口 | 955.01 | 100% | 1.94ms |
+| 50 | 混合场景 | 2708.06 | 100% | 4.37ms |
 
-## 📊 性能指标
+### 性能特点
 
-- **QPS**: 支持10,000+ QPS
-- **延迟**: P99 < 100ms
-- **并发**: 支持10,000+并发连接
-- **可用性**: 99.9%+
+- **最高 QPS**: 4466.54 (50并发健康检查)
+- **推荐并发**: 50以下，保证100%成功率
+- **响应时间**: 低并发下毫秒级响应
+- **稳定性**: 中低并发下表现优异
 
 ## 🧪 测试
 
-### 单元测试
+### 功能测试
 
+运行排行榜功能测试：
 ```bash
-make test
+go run examples/ranking_test.go
 ```
 
-### 性能测试
+### 压力测试
 
+运行压力测试（需要服务器运行）：
 ```bash
-make load-test
+# 完整压力测试
+go run examples/stress_benchmark.go
+
+# 轻量级负载测试
+go run examples/load_benchmark.go
 ```
 
-### 集成测试
+### 中间件测试
 
+测试中间件功能：
 ```bash
-# 启动测试环境
-docker-compose -f docker-compose.test.yml up -d
+# 启动中间件演示服务
+go run examples/middleware_demo.go
 
-# 运行集成测试
-go test -tags=integration ./test/...
+# 运行中间件测试脚本
+powershell -ExecutionPolicy Bypass -File examples/test_middleware.ps1
 ```
 
-## 🔍 故障排查
+## 📁 项目结构
 
-### 常见问题
-
-1. **连接数据库失败**
-   ```bash
-   # 检查数据库状态
-   make status
-   
-   # 查看日志
-   make logs
-   ```
-
-2. **排名计算错误**
-   ```bash
-   # 重建排行榜缓存
-   curl -X POST http://localhost:8080/admin/leaderboard/{id}/rebuild
-   ```
-
-3. **性能问题**
-   ```bash
-   # 查看系统指标
-   curl http://localhost:8080/api/v1/metrics/
-   ```
-
-### 日志分析
-
-```bash
-# 查看应用日志
-make logs
-
-# 查看错误日志
-docker-compose logs ranking-service | grep ERROR
+```
+ranking/
+├── cmd/server/          # 服务器入口
+├── internal/            # 内部代码
+│   ├── app/            # 应用程序逻辑
+│   ├── config/         # 配置管理
+│   ├── handler/        # HTTP 处理器
+│   ├── middleware/     # 中间件
+│   ├── model/          # 数据模型
+│   ├── repository/     # 数据访问层
+│   ├── server/         # 服务器配置
+│   └── service/        # 业务逻辑层
+├── pkg/logger/         # 日志工具
+├── examples/           # 示例和测试
+├── configs/            # 配置文件
+└── scripts/            # 脚本文件
 ```
 
-## 🤝 贡献指南
+## 🤝 贡献
 
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
-
-### 代码规范
-
-- 遵循Go代码规范
-- 添加必要的注释
-- 编写单元测试
-- 更新相关文档
+欢迎提交 Issue 和 Pull Request 来改进项目。
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 MIT 许可证。
 
 ## 👥 作者
 
-- **HHaou** - *初始开发* - [GitHub](https://github.com/HHaou)
+- **HHaou** - [GitHub](https://github.com/phuhao00)
 
 ## 🙏 致谢
 
-- [Gin](https://github.com/gin-gonic/gin) - HTTP Web框架
+- [netcore-go](https://github.com/netcorepal/netcore-go) - 现代化 Go Web 框架
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
-- [Docker](https://www.docker.com/) - 容器化平台
-- [Prometheus](https://prometheus.io/) - 监控系统
-
-## 📞 支持
-
-如果您有任何问题或建议，请通过以下方式联系：
-
-- 提交 [Issue](https://github.com/HHaou/ranking/issues)
-- 发送邮件到 [your-email@example.com]
-- 加入讨论群 [QQ群号或微信群]
 
 ---
 
