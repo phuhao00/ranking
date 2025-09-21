@@ -1,10 +1,10 @@
 # 游戏排行榜系统
 
-基于 Go 语言和 netcore-go 框架开发的高性能游戏排行榜系统，支持排行榜管理、分数提交和实时查询功能。
+基于 Go 语言和 netcore-go 网络框架开发的高性能游戏排行榜系统，支持排行榜管理、分数提交和实时查询功能。
 
 ## ✨ 核心特性
 
-- **netcore-go 框架**: 基于现代化的 Go Web 框架构建
+- **netcore-go 网络框架**: 基于高性能的 Go 网络框架构建
 - **完整中间件**: 日志记录、错误恢复、CORS、限流、安全头等
 - **数据持久化**: MongoDB 存储 + Redis 缓存双重保障
 - **RESTful API**: 完整的排行榜和分数管理接口
@@ -44,7 +44,7 @@
 
 ## 🛠️ 技术栈
 
-- **Web框架**: netcore-go (现代化 Go Web 框架)
+- **网络框架**: netcore-go (高性能 Go 网络框架)
 - **数据库**: MongoDB (文档存储)
 - **缓存**: Redis (高性能缓存)
 - **日志**: spoor v2.0.1 (高性能结构化日志库)
@@ -367,7 +367,7 @@ ranking/
 
 ## 🙏 致谢
 
-- [netcore-go](https://github.com/phuhao00/netcore-go) - 现代化 Go Web 框架
+- [netcore-go](https://github.com/phuhao00/netcore-go) - 高性能 Go 网络框架
 - [spoor](https://github.com/phuhao00/spoor) - 高性能结构化日志库
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
