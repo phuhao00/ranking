@@ -47,7 +47,7 @@
 - **Web框架**: netcore-go (现代化 Go Web 框架)
 - **数据库**: MongoDB (文档存储)
 - **缓存**: Redis (高性能缓存)
-- **日志**: 结构化日志系统
+- **日志**: spoor v2.0.1 (高性能结构化日志库)
 - **中间件**: 日志、恢复、CORS、限流、安全头、请求ID
 - **容器化**: Docker + Docker Compose
 - **测试**: 功能测试 + 压力测试工具
@@ -242,9 +242,9 @@ redis:
   pool_size: 100
 
 log:
-  level: "info"
-  format: "json"
-  output: "stdout"
+  level: "info"          # 日志级别 (基于spoor日志库)
+  format: "json"         # 日志格式 (spoor支持json和console格式)
+  output: "stdout"        # 日志输出 (spoor支持stdout和文件输出)
 ```
 
 ## 🚀 部署
@@ -367,7 +367,8 @@ ranking/
 
 ## 🙏 致谢
 
-- [netcore-go](https://github.com/netcorepal/netcore-go) - 现代化 Go Web 框架
+- [netcore-go](https://github.com/phuhao00/netcore-go) - 现代化 Go Web 框架
+- [spoor](https://github.com/phuhao00/spoor) - 高性能结构化日志库
 - [MongoDB](https://www.mongodb.com/) - 文档数据库
 - [Redis](https://redis.io/) - 内存数据库
 
