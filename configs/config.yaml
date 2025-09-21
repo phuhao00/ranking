@@ -1,0 +1,66 @@
+# 分布式游戏排行榜系统配置文件
+# Author: HHaou
+# Created: 2024-01-20
+
+# 服务器配置
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 30
+  write_timeout: 30
+  idle_timeout: 120
+  max_conns: 10000
+
+# MongoDB数据库配置
+mongodb:
+  uri: "mongodb://localhost:27017"
+  database: "ranking"
+  max_pool_size: 100
+  min_pool_size: 10
+  max_idle_time: 300
+  connect_timeout: 10
+
+# Redis缓存配置
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  pool_size: 100
+  min_idle_conns: 10
+  idle_timeout: 300
+  dial_timeout: 5
+  read_timeout: 3
+  write_timeout: 3
+
+# 日志配置
+log:
+  level: "info"
+  format: "json"
+  output: "stdout"
+  file_path: "logs/ranking.log"
+  max_size: 100
+  max_backups: 10
+  max_age: 30
+  compress: true
+
+# 监控指标配置
+metrics:
+  enabled: true
+  path: "/metrics"
+  port: 9090
+
+# 服务发现配置
+consul:
+  enabled: false
+  addr: "localhost:8500"
+  scheme: "http"
+  token: ""
+  datacenter: "dc1"
+
+# 安全配置
+security:
+  jwt_secret: "your-jwt-secret-key-change-in-production"
+  jwt_expiration: 3600
+  allowed_origins:
+    - "*"
+  rate_limit: 1000
